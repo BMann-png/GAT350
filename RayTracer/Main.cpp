@@ -1,5 +1,7 @@
 #include "Framebuffer.h"
 #include "PostProcess.h"
+#include "Scene.h"
+#include "Tracer.h"
 #include <iostream>
 #include <SDL.h>
 
@@ -13,6 +15,29 @@ int main(int, char**)
 
 	std::unique_ptr<Framebuffer> framebuffer = std::make_unique<Framebuffer>(renderer.get(), renderer.get()->width, renderer.get()->height);
 	
+	// ray tracer
+	std::unique_ptr<Tracer> tracer = std::make_unique<Tracer>();
+
+	// scene
+	std::unique_ptr<Scene> scene = std::make_unique<Scene>();
+	//std::unique_ptr<Sphere> sphere = std::make_unique<Sphere>(glm::vec3{ 0, 0, -10 }, 3.0f);
+	//scene->Add(std::move(sphere));
+	//
+	//scene->Add(std::move(std::make_unique<Plane>(glm::vec3{ 0, -5, 0 }, glm::vec3{ 0, 1, 0 })));
+
+	scene->Add(std::move(std::make_unique<Sphere>(glm::vec3{ 0, 0, -10 }, 3.0f, std::make_shared<Lambertian>(glm::vec3{ 1, 0, 0 }))));
+	scene->Add(std::move(std::make_unique<Sphere>(glm::vec3{ 3, 3, -8 }, 1.0f, std::make_shared<Metal>(glm::vec3{ 0, 1, 0 }, 0.0f))));
+	scene->Add(std::move(std::make_unique<Sphere>(glm::vec3{ -3, 6, -13 }, 1.0f, std::make_shared<Metal>(glm::vec3{ 0, 0, 1 }, 0.0f))));
+	scene->Add(std::move(std::make_unique<Plane>(glm::vec3{ 0, -3, 0 }, glm::vec3{ 0, 1, 0 }, std::make_shared<Metal>(glm::vec3{ 0.5f, 0.5f, 0.5f }, 0.0f))));
+
+	float focalLength = glm::length(glm::vec3{ 5, 5, 5 } - glm::vec3{ 0, 0, -10 });
+	std::unique_ptr<Camera> camera = std::make_unique<Camera>(glm::vec3{ 5, 5, 5 }, glm::vec3{ 0, 0, -10 }, glm::vec3{ 0, 1, 0 }, 90.0f, glm::ivec2{ framebuffer->colorbuffer.width, framebuffer->colorbuffer.height }, 1.0f, focalLength);
+
+	//render scene
+	framebuffer->Clear({ 0, 0, 0, 0 });
+	tracer->Trace(framebuffer->colorbuffer, scene.get(), camera.get());
+	framebuffer->Update();
+
 	bool quit = false;
 	SDL_Event event;
 	while (!quit)
@@ -25,9 +50,6 @@ int main(int, char**)
 			break;
 		}
 
-		framebuffer->Clear({ 0, 0, 0, 255 });
-		
-		framebuffer->Update();
 
 		renderer->CopyBuffer(framebuffer.get());
 		renderer->Present();
