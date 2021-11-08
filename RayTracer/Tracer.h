@@ -11,4 +11,5 @@ public:
 
 public:
 	int samples = 30;
+	int depth = 30;
 };

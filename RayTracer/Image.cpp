@@ -2,6 +2,11 @@
 #include <iostream>
 #include <fstream>
 
+Image::Image(const std::string& filename, uint8_t alpha)
+{
+    Load(filename, alpha);
+}
+
 Image::~Image()
 {
    

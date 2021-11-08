@@ -6,6 +6,7 @@ void Tracer::Trace(const ColorBuffer& colorbuffer, Scene* scene, Camera* camera)
 	float aspectRatio = colorbuffer.width / (float)colorbuffer.height;
 
 
+
 	for (int y = 0; y < colorbuffer.height; y++)
 	{
 		for (int x = 0; x < colorbuffer.width; x++)
@@ -29,9 +30,12 @@ void Tracer::Trace(const ColorBuffer& colorbuffer, Scene* scene, Camera* camera)
 				//ray_t ray{ {0,0,0}, direction };
 
 				raycastHit_t hit;
-				color += scene->Trace(ray, 0.001f, FLT_MAX, hit);
+				color += scene->Trace(ray, 0.001f, FLT_MAX, hit, depth);
 			}
-			color /= (float)samples;
+			//color /= (float)samples;
+			color.r = sqrt(color.r / samples);
+			color.g = sqrt(color.g / samples);
+			color.b = sqrt(color.b / samples);
 
 			colorbuffer.SetColor(x, y, Vec3ToColor(color));
 		}
