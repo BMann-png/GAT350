@@ -43,6 +43,9 @@ int main(int, char**)
 	scene->Add(std::move(std::make_unique<Sphere>(glm::vec3{ 0, 1, -4 }, 1.5f, std::make_shared<Dielectric>(glm::vec3{ 0.5f, 1, 0.5f }, 2.42f))));
 	scene->Add(std::move(std::make_unique<Plane>(glm::vec3{ 0, -2, 0 }, glm::vec3{ 0, 1, 0 }, std::make_shared<Lambertian>(black_checker))));
 
+	//light
+	scene->Add(std::move(std::make_unique<Sphere>(glm::vec3{ 10, 20, 0 }, 10.0f, std::make_shared<Emissive>(glm::vec3{ 10, 10, 10 }))));
+
 	// camera
 	glm::vec3 eye = glm::vec3{ 5, 1, 2 };
 	glm::vec3 lookAt = glm::vec3{ 0, 2, -10 };
